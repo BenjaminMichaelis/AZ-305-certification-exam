@@ -28,6 +28,7 @@
 
   - [https://docs.microsoft.com/shows/exam-readiness-zone/preparing-for-az-204-connect-to-and-consume-azure-services-and-third-party-services-segment-5-of-5](https://docs.microsoft.com/shows/exam-readiness-zone/preparing-for-az-204-connect-to-and-consume-azure-services-and-third-party-services-segment-5-of-5)
 - [Sample Questions](https://www.notion.so/-Questions-c3d027c819d64e1cb06d524da9fd555e)
+- [More Sample Questions](https://docs.microsoft.com/certifications/resources/az-104-sample-questions)
 
 ### Deploy and manage Azure compute resources
 
