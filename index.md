@@ -94,6 +94,19 @@
 
 ## Design solutions for logging and monitoring
 
+- Azure Monitor
+  - Includes metrics, logs, traces, and changes.
+  - Collects data from Data Sources, and can be consumed by other resources like insights (ex: application insights), visualizations (ex: workbooks), analyze (ex: log analytics), and respond (ex: alerts)
+  - Can integrate with things like event hubs
+- Log Analytics
+  - Powers Azure Monitor
+    - Azure monitor stores log data in the workspace
+  - Data is organized into tables with properties you can query
+  - Provides:
+    - Geographic location for data storage
+    - Data isolation (can grant different users access rights differently)
+    - Scope configuration of settings like tier, pricing, retention, data caping
+
 ### Monitoring
 
 #### Data is generated from
@@ -143,9 +156,238 @@
 
 ## Design authentication and authorization solutions
 
+- Active Directory Domain Services can use Azure AD Connect (or AD Connect cloud sync for gybrid identity sync) to connect to azure active directory
+- Azure Active Directory
+  - Internal Users
+  - On-Premesis Users
+  - Guest Users (B2B/B2C)
+
+- If you need:
+  - For employees in cloud or hybrid environment
+    - Azure Active Directory (Azure AD)
+  - Collaborate with guest users and external business partners like suppliers and vendors
+    - Azure AD Business to Business (B2B)
+  - Control how customers sign up, sign in, and manage their profiles when they use your applications
+    - Azure AD Business to Consumer (B2C)
+
 ## Design governance
 
+- Typical Azure hierarchy has 4 levels:
+  - Management Groups
+  - Subscriptions
+  - Resource Groups
+  - Resources
+![Azure Hierarchy](./Images/AzureGovernanceHierarchy.png)
+
 # Design data storage solutions (20–25%)
+
+## Design data storage solutions for relational data
+
+![RelationalDataStructuredDataProductFlowchart](./Images/RelationalDataStructuredDataProductFlowchart.png)
+
+- Database Models
+  - DTU
+    - <https://learn.microsoft.com/azure/azure-sql/database/resource-limits-dtu-single-databases?view=azuresql&WT.mc_id=8B97120A00B57354>
+    - Simple, preconfigured purchase option.
+    - Combined measure of compute, storage, and I/O resources
+    - SKU's
+      - Basic (Max 5 DTU's)
+      - Standard S0(10 DTU's) - S12(3000 DTU's)
+      - Premium P1(125 DTU's) - P15(4000 DTU's)
+  - vCore
+    - <https://learn.microsoft.com/azure/azure-sql/database/resource-limits-vcore-elastic-pools?view=azuresql&WT.mc_id=8B97120A00B57354>
+    - Independent scaling of compute, storage, and I/O resources
+    - Provisioned compute
+    - Serverless compute
+
+Database scaling strategy. These are key points before choosing vertical/horizontal scaling:
+| Requirement | Solution |
+| ----------- | -------- |
+| Do you have to manage and scale multiple Azure SQL databases that have varying and unpredictable resource requirements? | **SQL elastic pools** |
+| Do you have different sections of the database residing in different parts of the world for compliance concerns? | **Horizontal scaling by sharding** works best |
+| Are there dependencies, such as commercial Bl or data integration tools where multiple databases contribute rows into a single overall result for use in Excel, Power Bl, Tableau, or Cognos? | Use **Elastic database tools** and elastic query feature within it to access data spread across multiple databases |
+
+- Data Protection
+  - Network Security
+    - VNet
+    - Firewall rules, NSG
+    - Private link
+  - Identity and access
+    - Authentication options: Azure AD, SQL Auth, Windows Auth
+    - Azure RBAC
+    - Roles and permissions
+    - Row level security
+  - Data Protection
+    - Encryption-in-use
+      - Always Encrypted
+      - Dynamic data masking (DDM)
+        - Hiding data from end user
+        - Ex: like if data is this classification, hide all of it except for last 4 number
+    - Encryption-at-rest
+      - Transparent Data Encryption (TDE)
+    - Encryption-in-flight
+      - Transport Layer Security (TLS)
+      - Restrict Endpoints, etc
+    - User-managed keys
+  - Security management
+    - Advanced threat detection
+    - SQL Audit
+    - Audit integration with log analytics and event hubs
+    - Vulnerability assessment
+    - Data discovery and classification
+    - Microsoft Defender for Cloud
+
+- Structured Data
+- Column/Rows
+- Sql DB
+  - Azure SQL Db
+    - PaaS (managed solutions)
+    - 100TB capacity
+    - Autoscaling
+    - Service Tiers
+      - General Purpose
+        - 1 replica
+      - Buisness Critical
+        - High availability, multiple nodes
+        - 3 replicas
+      - HyperScale
+        - Shard data
+        - Can distribute requests over shards of the data
+        - Higher set of scale, spread over multiple page servers
+        - Multiple replicas
+  - Azure SQL Managed Instance
+    - PaaS (in Vnet)
+    - Better Compat
+  - SQL in IaaS VM
+    - You manage the whole thing
+    - There is a sql server IAAS sql extension
+      - Helps w/ automated backup/patching, etc.
+      - Sql data migration assistent tool
+  - Azure SQL Edge
+    - Optimized for IOT
+      - Large streams of information
+    - Very lightweight (less than 500mb memory footprint)
+- Security
+  - Classification
+    - Azure Purview
+
+
+## Design data storage solutions for semi-structured and unstructured data
+
+### Semi-Structured
+
+- JSON/XML
+- Table
+  - Key-Value
+- Cosmos DB
+  - Multi-Region
+    - Consistency
+      - Strong - it needs to be conistent in all regions
+      - Eventual - It just eventually needs to be consistent in regions
+  - API
+    - SQL/Mongo DB
+    - Cassandra
+    - Table - Key/Value
+    - Gremlin - Graph
+
+### Unstructured
+
+- Docs/Media
+
+#### Storage account
+
+- BLOB (Binary large object)
+  - Block
+    - Access Tiers
+      - Premium Storage Account
+      - Standard Storage Account
+        - Hot
+        - Cool
+        - Archived
+          - Is Offline
+    - Often for images and multimedia files.
+- Page
+  - Good for random read writes
+  - Managed Disks
+    - STD HDD
+      - Performance generally increases with size
+    - STD SSD
+      - Performance generally increases with size
+    - Prem SSD
+      - Can change performance separate from size
+    - Ultra Disk
+      - Has three controls:
+        - Capacity
+        - IOPS
+        - Throughput
+  - Append
+- Files
+  - Full managed file share in the cloud
+  - Primarily for SMB
+  - NFS also works
+  - Azure Files REST API
+- Queues
+  - FIFO solution
+  - Good to create a backlog of work to process asynchronously
+- Types of storage accounts
+  - Standard General Purpose V2
+  - Premium
+    - Types
+      - Block
+      - Files
+      - Page
+    - Generally high performance, but maybe have less options
+      - No GRS options - only LRS or ZRS
+- Immuntability
+  - Legal holds
+  - Time based holds
+- Security
+  - Access
+    - Firewalls
+    - IP's
+    - VNETs
+      - Service/Private endpoints
+  - Rights
+    - Access Keys - Don't use these
+    - Shared Access Signatures
+      - But these need to be signed by the access keys (disabling access keys would cause issues)
+      - Account Level (files, queues, etc)
+      - Service (operations, ips, etc.)
+    - RBAC Data
+
+#### Azure Data Lake
+
+- Azure Data Lake Storage Gen 2
+- Build on top of Blob storage
+- Adds POSIX, etc
+- Is a place a bunch of data can go just to store raw data so you can transform it differently later on
+
+## Design data integration
+
+- Replication Options
+  - LRS
+    - 3 copies of data within one data cluster (building)
+  - ZRS
+    - 3 copies across data centers
+  - GRS
+    - 3 copies
+
+### Azure Stream Analytics
+
+- Real-time analytics
+- Event processing
+- ex: Real-life telemetry streams from IoT devices
+- Ingest -> Analyze (Stream Analytics) -> Deliver
+
+### Azure Data Factory
+
+- Source -> ETL (Get data out of somewhere, change it, load it into something else) (Data integration solution) -> Sink
+- It is a data orchestration solution
+  - 90+ built in connectors
+- Create a pipeline
+  - Set of activities to achieve a task
+    - Consume Data/Tranform Data, etc.
+- Self hosted Integration Runtime, that can feed things into azure data factory
 
 # Design business continuity solutions (15–20%)
 
@@ -199,152 +441,6 @@
     - Doesn't always make sense to backup blob snapshots (ex) into backup vault into same region
   - There are lots of settings
     - Ex: Azure backup does snapshots, but you can keep some instant snapshots locally for a period of time
-
-#### Data Solutions
-
-##### Structured
-
-- Column/Rows
-- Sql DB
-  - Azure SQL Db
-    - PaaS (managed solutions)
-    - 100TB capacity
-    - Autoscaling
-    - Service Tiers
-      - General Purpose
-        - 1 replica
-      - Buisness Critical
-        - High availability, multiple nodes
-        - 3 replicas
-      - HyperScale
-        - Shard data
-        - Can distribute requests over shards of the data
-        - Higher set of scale, spread over multiple page servers
-        - Multiple replicas
-  - Azure SQL Managed Instance
-    - PaaS (in Vnet)
-    - Better Compat
-  - SQL in IaaS VM
-    - You manage the whole thing
-    - There is a sql server IAAS sql extension
-      - Helps w/ automated backup/patching, etc.
-      - Sql data migration assistent tool
-  - Azure SQL Edge
-    - Optimized for IOT
-      - Large streams of information
-    - Very lightweight (less than 500mb memory footprint)
-- Security
-  - Classification
-    - Azure Purview
-  - Data at rest (TDE)
-  - In Transit
-    - Restrict endpoints, etc
-  - In Use
-    - DDM
-      - Dynamic Data Masking
-      - Hiding data from end user
-      - Ex: like if data is this classification, hide all of it except for last 4 number
-    - Always Encrypted
-
-##### Semi-Structured
-
-- JSON/XML
-- Table
-  - Key-Value
-- Cosmos DB
-  - Multi-Region
-    - Consistency
-      - Strong - it needs to be conistent in all regions
-      - Eventual - It just eventually needs to be consistent in regions
-  - API
-    - SQL/Mongo DB
-    - Cassandra
-    - Table - Key/Value
-    - Gremlin - Graph
-
-##### Unstructured
-
-- Docs/Media
-- Storage account
-  - BLOB (Binary large object)
-    - Block
-      - Access Tiers
-        - Premium Storage Account
-        - Standard Storage Account
-          - Hot
-          - Cool
-          - Archived
-            - Is Offline
-    - Page
-      - Good for random read writes
-      - Managed Disks
-        - STD HDD
-          - Performance generally increases with size
-        - STD SSD
-          - Performance generally increases with size
-        - Prem SSD
-          - Can change performance separate from size
-        - Ultra Disk
-          - Has three controls:
-            - Capacity
-            - IOPS
-            - Throughput
-    - Append
-  - Files
-    - Primarily for SMB
-    - NFS also works
-  - Queues
-    - FIFO solution
-  - Types of storage accounts
-    - Standard General Purpose V2
-    - Premium
-      - Types
-        - Block
-        - Files
-        - Page
-      - Generally high performance, but maybe have less options
-        - No GRS options - only LRS or ZRS
-  - Immuntability
-    - Legal holds
-    - Time based holds
-  - Security
-    - Access
-      - Firewalls
-      - IP's
-      - VNETs
-        - Service/Private endpoints
-    - Rights
-      - Access Keys - Don't use these
-      - Shared Access Signatures
-        - But these need to be signed by the access keys (disabling access keys would cause issues)
-        - Account Level (files, queues, etc)
-        - Service (operations, ips, etc.)
-      - RBAC Data
-
-- Replication Options
-  - LRS
-    - 3 copies of data within one data cluster (building)
-  - ZRS
-    - 3 copies across data centers
-  - GRS
-    - 3 copies
-
-##### Azure Data Factory
-
-- Source -> ETL (Get data out of somewhere, change it, load it into something else) (Data integration solution) -> Sink
-- It is a data orchestration solution
-  - 90+ built in connectors
-- Create a pipeline
-  - Set of activities to achieve a task
-    - Consume Data/Tranform Data, etc.
-- Self hosted Integration Runtime, that can feed things into azure data factory
-
-##### Azure Data Lake
-
-- Azure Data Lake Storage Gen 2
-- Build on top of Blob storage
-- Adds POSIX, etc
-- Is a place a bunch of data can go just to store raw data so you can transform it differently later on
 
 ## Design for high availability
 
@@ -599,9 +695,9 @@ Pillars of good architecture
   - Availability Zones
     - Entire data center
 - Objectives
-  - Recovery Time Objective
+  - Recovery Time Objective (RTO)
     - How long I need to restore in
-  - Recovery Point Objective
+  - Recovery Point Objective (RPO)
     - How much can I lose
 
 ### Security
