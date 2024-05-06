@@ -271,7 +271,6 @@ Database scaling strategy. These are key points before choosing vertical/horizon
   - Classification
     - Azure Purview
 
-
 ## Design data storage solutions for semi-structured and unstructured data
 
 ### Semi-Structured
@@ -391,6 +390,27 @@ Database scaling strategy. These are key points before choosing vertical/horizon
 
 # Design business continuity solutions (15–20%)
 
+- Definitions:
+  - HA (High Availability)
+  - DR (Disaster Recovery)
+  - Recovery Time Objective (RTO)
+    - How long I need to restore in
+    - The maximum amount of time available to bring resources online after an outage or problem.
+  - Recovery Point Objective (RPO)
+    - How much can I lose
+    - The point in time to which a database should be recovered and equates to the maximum amount of data loss that the business is willing to accept.
+  - MTTR (Mean Time to Recovery)
+    - How long a component can reasonably expect to last between outages
+  - MTBF (Mean Time Between Failures)
+    - How long it takes to restore a component after a failure
+
+- SQL Server HADR Features for Azure Virtual Machine
+  - Always On Failover Cluster Instances (FCI)
+    - Protects Instance (the entire installation of SQL Server)
+  - Always On Availability Groups (AG)
+    - Protects Database (Anything in the database itself, the data)
+  - Log Shipping
+    - Protects Database (Anything in the database itself, the data)
 - Region
   - Has Fault and update domains
     - Fault domains is rack level
@@ -402,18 +422,21 @@ Database scaling strategy. These are key points before choosing vertical/horizon
   - Doesn't help building failures
     - Each Building has dedicated power, cooling, networking
   - Availability Zones
-    - Logical separations per subscription, not necessarily building 1 is availabiliity zone 1
-    - Creates resiliancy for a data center failure
-  - Synchronous resiliancy for replication (less than 2ms)
+    - Logical separations per subscription, not necessarily building 1 is availability zone 1
+    - Creates resiliency for a data center failure
+    - Synchronous resiliency for replication (less than 2ms)
   - Some services are Zone Redundant
-    - Then that server is automatically distrubuted among multiple availabilty zones
+    - Then that server is automatically distributed among multiple availability zones
   - Some services are Zonal
     - You choose which AZ your service lives in. So if you want redundancy, you need to make multiple services in different zones
   - If it's Regional
     - You don't know where in the region it is in
-- Make sure you have equal resiliancy in all parts of your architecture/solution (otherwise you still have a less resiliant point of failure)
+- Make sure you have equal resiliency in all parts of your architecture/solution (otherwise you still have a less resilient point of failure)
 - Multiple region solutions
   - Is asynchronous - not synchronous, (can happen up to 15 min after sync?)
+
+- Azure Site Recovery
+  - - Replicates a VM from one region to another
 
 - Load Balancing
   - L7 - App Gateway
@@ -441,6 +464,12 @@ Database scaling strategy. These are key points before choosing vertical/horizon
     - Doesn't always make sense to backup blob snapshots (ex) into backup vault into same region
   - There are lots of settings
     - Ex: Azure backup does snapshots, but you can keep some instant snapshots locally for a period of time
+  - Storage Vaults:
+    - Azure Backup Vault
+      - Only used within Azure Backup
+    - Azure Recovery Services Vault
+      - Can be used with Azure Backup or Azure Site Recovery
+      - 
 
 ## Design for high availability
 
