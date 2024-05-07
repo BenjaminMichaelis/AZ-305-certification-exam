@@ -563,7 +563,7 @@ Compute Decision Tree: <https://learn.microsoft.com/azure/architecture/guide/tec
   - Can run Queue (1:1)
   - Has Topics
     - You can have subscribers to a topic
-      - Service bus will create a copy of the message per subsciber to a topic, so each subscriber can do what it needs wtih the message
+      - Service bus will create a copy of the message per subsciber to a topic, so each subscriber can do what it needs with the message
 - Azure API Management
   - Can have auth
 
