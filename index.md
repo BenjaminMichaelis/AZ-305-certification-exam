@@ -237,6 +237,12 @@ Database scaling strategy. These are key points before choosing vertical/horizon
     - Data discovery and classification
     - Microsoft Defender for Cloud
 
+| Compare | SQL Database | SQL Managed Instance | SQL Server on Azure Virtual Machines |
+|---------|--------------|----------------------|--------------------------------------|
+| Scenarios | Best for modern cloud applications, hyperscale or serverless configurations | Best for most lift-and-shift migrations to the cloud, instance-scoped features | Best for fast migrations, and applications that require OS-level access |
+| Features | Single database - Hyperscale storage (for databases up to 100 TB) - Serverless compute - Fully managed service | Single Instance - (SQL Server surface area via managed instance) - Native virtual networks - Fully managed service | Azure Virtual Machines - (SQL Server access) - OS-level server access - Expansive version support for SQL Server - Fully managed service |
+| Elastic pool capabilities | Resource sharing between multiple databases for price optimization - Fully managed service | Instance pool - Pre-provision compute resources for migration - Cost-efficient migration - Host smaller instances (2vCore) - Fully managed service | No elastic pool capability |
+
 - Structured Data
 - Column/Rows
 - Sql DB
@@ -305,6 +311,15 @@ Database scaling strategy. These are key points before choosing vertical/horizon
         - Archived
           - Is Offline
     - Often for images and multimedia files.
+
+Managed Disk Types Comparison
+| Comparison   | Ultra-disk | Premium SSD | Standard SSD | Standard HDD |
+|--------------|------------|-------------|--------------|--------------|
+| Disk type    | SSD        | SSD         | SSD          | HDD          |
+| Scenario     | IO-intensive workloads, such as SAP HANA, top tier databases like SQL Server and Oracle, and other transaction-heavy workloads. | Production and performance sensitive workloads | Web servers, lightly used enterprise applications, development and testing | Backup, non-critical infrequent access |
+| Throughput   | up to 2,000 Mbps | up to 900 Mbps | up to 750 Mbps | up to 500 Mbps |
+| Max IOPS     | up to 160,000 | up to 20,000 | up to 6,000 | up to 600 |
+
 - Page
   - Good for random read writes
   - Managed Disks
@@ -435,9 +450,6 @@ Database scaling strategy. These are key points before choosing vertical/horizon
 - Multiple region solutions
   - Is asynchronous - not synchronous, (can happen up to 15 min after sync?)
 
-- Azure Site Recovery
-  - - Replicates a VM from one region to another
-
 - Load Balancing
   - L7 - App Gateway
     - Lives in a region
@@ -469,7 +481,11 @@ Database scaling strategy. These are key points before choosing vertical/horizon
       - Only used within Azure Backup
     - Azure Recovery Services Vault
       - Can be used with Azure Backup or Azure Site Recovery
-      - 
+  - Can protect on-premises virtual machines
+  - Scheduled backups to a storage vault
+- Azure Site Recovery
+  - Replicates a VM from one region to another
+  - Privides continuous replication to a secondary region
 
 ## Design for high availability
 
@@ -613,6 +629,8 @@ Compute Decision Tree: <https://learn.microsoft.com/azure/architecture/guide/tec
 - Azure virtual WAN
   - Managed solution
   - Hub
+
+![Load Balancer Decision Tree](./Images/load-balancer-decision-tree.png)
 
 # Well-Architected Framework
 
