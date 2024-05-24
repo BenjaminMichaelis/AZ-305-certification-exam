@@ -313,6 +313,7 @@ Database scaling strategy. These are key points before choosing vertical/horizon
     - Often for images and multimedia files.
 
 Managed Disk Types Comparison
+
 | Comparison   | Ultra-disk | Premium SSD | Standard SSD | Standard HDD |
 |--------------|------------|-------------|--------------|--------------|
 | Disk type    | SSD        | SSD         | SSD          | HDD          |
