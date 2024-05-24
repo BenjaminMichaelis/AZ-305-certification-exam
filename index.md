@@ -201,6 +201,7 @@
     - Serverless compute
 
 Database scaling strategy. These are key points before choosing vertical/horizontal scaling:
+
 | Requirement | Solution |
 | ----------- | -------- |
 | Do you have to manage and scale multiple Azure SQL databases that have varying and unpredictable resource requirements? | **SQL elastic pools** |
